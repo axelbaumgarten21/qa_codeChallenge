@@ -39,4 +39,39 @@ describe("Employee Manager", () => {
       title: "Grand Poobah",
     });
   });
+
+    it("Can add another employee", async () => {
+      await em.addEmployee();
+      await em.selectEmployeeByName("New Employee");
+      await em.editEmployee({
+        name: "Elecktra",
+        phone: "3422342345",
+        title: "Supervisor of destruction"
+      });
+      await em.saveChanges();
+      await em.selectEmployeeByName("Bernice Ortiz");
+      await em.selectEmployeeByName("Elecktra");
+      let employee = await em.getEmployeeInfo();
+      expect(employee.name).toEqual("Elecktra");
+      expect(employee.phone).toEqual("3422342345");
+      expect(employee.title).toEqual("Supervisor of destruction")
+      });
+    it("Can cancel an edit of an employee", async () => {
+      await em.selectEmployeeByName("Ruby Estrada");
+      await em.editEmployee({ phone: "5740923478"});
+      await em.cancelChanges();
+      await em.selectEmployeeByName("Bernice Ortiz");
+      await em.selectEmployeeByName("Ruby Estrada");
+      let employee = await em.getEmployeeInfo();
+      expect(employee.phone).toEqual("5740923478")
+  });
+    it("Won't save when naviagting away from edit", async () => {
+      await em.selectEmployeeByName("Lou White");
+      await em.editEmployee({ name: "Hulk Hogen"});
+      await em.selectEmployeeByName("Bernice Ortiz");
+      await em.selectEmployeeByName("Lou White")
+      let employee = await em.getEmployeeInfo();
+      expect(employee.name).toEqual("Lou White")
+    });
 });
+
